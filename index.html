@@ -76,7 +76,7 @@
             {{#each}}
             <div class="col-xs-6 col-sm-4 col-md-3">
               <a href="#" class="thumbnail">
-                <img src="{{url}}" width="2000" height="2000" alt="...">
+                <img {{bind-attr src=url}} width="2000" height="2000" alt="...">
               </a>
             </div>
             {{/each}}
