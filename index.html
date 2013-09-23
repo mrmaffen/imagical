@@ -48,7 +48,7 @@
           <div class="col-md-8" id="topBar">
             <div class="form-group">
             <label for="inputFile">File input</label>
-            <input type="file" id="inputFile">
+            {{input type="file" id="inputFile" value=filePath action="readFile"}}
             <p class="help-block">Choose the textfile which contains your list of keywords to search for.</p>
             </div>  
           </div>
@@ -64,26 +64,29 @@
               Next term
             </button>  
             <div class="list-group" id="sideBar">
-              <a href="#" class="list-group-item active">Cras justo odiodddddddddddd</a>
-              <a href="#" class="list-group-item">Dapibus ac facilisis indddddd</a>
-              <a href="#" class="list-group-item">Morbi leo risus</a>
-              <a href="#" class="list-group-item">Porta ac consectetur ac</a>
-              <a href="#" class="list-group-item">Vestibulum at eros</a>
-              <a href="#" class="list-group-item">Dapibus ac facilisis in</a>
+              {{#each}}
+                  {{#link-to 'term' this class='list-group-item'}}
+                    {{term}}
+                  {{/link-to}}
+              {{/each}}
             </div>
           </div>
           <div class="col-md-10">
-            {{#each}}
+            {{outlet}}
+          </div>
+        </div>
+  
+      </div> <!-- /container -->
+    </script>
+    
+    <script type="text/x-handlebars" data-template-name="terms">
+        {{#each content.imageresults}}
             <div class="col-xs-6 col-sm-4 col-md-3">
               <a href="#" class="thumbnail">
                 <img {{bind-attr src=url}} width="2000" height="2000" alt="...">
               </a>
             </div>
-            {{/each}}
-          </div>
-        </div>
-  
-      </div> <!-- /container -->
+        {{/each}}
     </script>
 
 
@@ -101,7 +104,8 @@
     ================================================== -->
     <script src="js/application.js"></script>
     <script src="js/router.js"></script>
-    <script src="js/models/imageresult.js"></script>
+    <script src="js/models/model.js"></script>
+    <script src="js/controllers/imagical_controller.js"></script>
     
     <!-- Placed at the end of the document so the pages load faster -->
   </body>
