@@ -1,6 +1,7 @@
 Imagical.Router.map(function() {
-  this.resource('imagical', { path: '/' });
-  this.resource('term', { path: ':term_id'});
+  this.resource('imagical', { path: '/' }, function(){
+    this.resource('term', { path: ':term_id'});
+  });
 });
 
 Imagical.ImagicalRoute = Ember.Route.extend({
@@ -11,6 +12,6 @@ Imagical.ImagicalRoute = Ember.Route.extend({
 
 Imagical.TermRoute = Ember.Route.extend({
   model: function() {
-    return this.store.find('imageresult');
+    return this.store.find('imageresult', term_id);
   }
 });

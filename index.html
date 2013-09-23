@@ -72,17 +72,17 @@
             </div>
           </div>
           <div class="col-md-10">
-            {{outlet}}
+          {{outlet}}
           </div>
         </div>
   
       </div> <!-- /container -->
     </script>
     
-    <script type="text/x-handlebars" data-template-name="terms">
+    <script type="text/x-handlebars" data-template-name="term">
         {{#each content.imageresults}}
             <div class="col-xs-6 col-sm-4 col-md-3">
-              <a href="#" class="thumbnail">
+              <a class="thumbnail">
                 <img {{bind-attr src=url}} width="2000" height="2000" alt="...">
               </a>
             </div>

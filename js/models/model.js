@@ -6,7 +6,7 @@ Imagical.Imageresult = DS.Model.extend({
 
 Imagical.Terms = DS.Model.extend({
     term: DS.attr('string'),
-    imageresults: DS.hasMany('imageresult')
+    imageresults: DS.hasMany('imageresult', {async: true}),
 });
 
 Imagical.Imageresult.FIXTURES = [
