@@ -1,33 +1,52 @@
 Imagical.ImagicalController = Ember.ArrayController.extend({
+    content: [],
     actions: {
-        readFile: function () {
+        readInputFile: function(e){
+            console.log("readInputFile");
             var reader = new FileReader();
+            var file = e.target.files[0];
+            var that = this;
+            
             reader.onload = function(e) {
                 // Print the contents of the file
                 var text = e.target.result;
-
                 var lines = text.split(/[\r\n]+/g); // tolerate both Windows and Unix linebreaks
-
-                for(var i = 0; i < lines.length; i++) {
-                    if (lines[i].length > 240){
-                        output.push('<li>' + lines[i] + '<br>');
-                    }
+                
+                var fileRecord = that.store.createRecord('file', {
+                    fileName: file.name
+                });
+                fileRecord.save();
+                that.transitionToRoute('file', fileRecord);
+            
+                for (var i = 0; i < lines.length; i++){
+                    var termRecord = that.store.createRecord('term', {
+                        termText: lines[i]
+                    });
+                    termRecord.get('file').pushObject(fileRecord);
+                    termRecord.save();
+                    if (i===0)
+                        that.transitionToRoute('term', termRecord);
+                    //fileRecord.get('terms').pushObject(termRecord);
+                    /*this.store.find(Imagical.Term, {termText: tt}).then( 
+                            function(t){
+                                if (t){
+                                    console.log('term ´'+tt+'´ not found, creating new one');
+                                    this.store.createRecord('term', {
+                                            termText: tt
+                                    });
+                                }
+                            }
+                        ).then (
+                            null,
+                            function(reason){
+                                console.error(reason);
+                            }
+                        );             
+                        */
                 }
             };
 
-            reader.readAsText(f,"UTF-8");
-            // Get the todo title set by the "New Todo" text field
-            var title = this.get('newTitle');
-            if (!title.trim()) { return; }
-
-            // Create the new Todo model
-            var todo = this.store.createRecord('todo', {
-                title: title,
-                isCompleted: false
-            });
-
-            // Save the new model
-            todo.save();
+            reader.readAsText(file, "UTF-8");
         }
     }
 });
