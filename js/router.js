@@ -7,7 +7,11 @@ Imagical.Router.map(function() {
 });
 
 Imagical.ImagicalRoute = Ember.Route.extend({
-  model: function() {
-    return this.store.find('file');
-  }
+    actions: {
+        toggleSelected: function(model){
+            console.log('toggleSelected '+model.get('isSelected'));
+            model.set('isSelected', !model.get('isSelected'));
+            model.save();
+        }
+    }
 });

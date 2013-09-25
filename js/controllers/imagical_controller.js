@@ -1,5 +1,4 @@
 Imagical.ImagicalController = Ember.ArrayController.extend({
-    content: [],
     actions: {
         readInputFile: function(e){
             console.log("readInputFile");
@@ -23,9 +22,19 @@ Imagical.ImagicalController = Ember.ArrayController.extend({
                         termText: lines[i]
                     });
                     termRecord.get('file').pushObject(fileRecord);
-                    termRecord.save();
-                    if (i===0)
+                    if (i===0){
                         that.transitionToRoute('term', termRecord);
+                        
+                        for (var j = 0; j < 10; j++ ){
+                            var testRecord = that.store.createRecord('imageresult', {
+                                url: "http://placehold.it/400x350/"+Math.round(Math.random()*9)+"0"+Math.round(Math.random()*9)+"0"+Math.round(Math.random()*9)+"0/ffffff.png&text=test",
+                                thumbNailUrl: "http://placehold.it/400x350/"+Math.round(Math.random()*9)+"0"+Math.round(Math.random()*9)+"0"+Math.round(Math.random()*9)+"0/ffffff.png&text=test"
+                            });
+                            testRecord.save();
+                            termRecord.get('imageresults').pushObject(testRecord);
+                        }
+                    }
+                    termRecord.save();
                     //fileRecord.get('terms').pushObject(termRecord);
                     /*this.store.find(Imagical.Term, {termText: tt}).then( 
                             function(t){

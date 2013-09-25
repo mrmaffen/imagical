@@ -48,3 +48,7 @@ hr {
 #topBar {
   height: 140px;
 }
+
+.selected {
+  background-color: yellow;
+}

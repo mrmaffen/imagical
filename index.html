@@ -86,7 +86,7 @@
     <script type="text/x-handlebars" data-template-name="term">
         {{#each content.imageresults}}
             <div class="col-xs-6 col-sm-4 col-md-3">
-              <a class="thumbnail">
+              <a {{bind-attr class=":thumbnail isSelected:selected"}} {{action 'toggleSelected' this}}>
                 <img {{bind-attr src=url}} width="2000" height="2000" alt="...">
               </a>
             </div>
@@ -113,7 +113,7 @@
     <script src="js/controllers/imagical_controller.js"></script>
     <!-- Source Javascript
     ================================================== -->
-    <script src="js/searchGoogle.js"></script>
+    <script src="js/search_plugins/google.js"></script>
     
     
     <!-- Placed at the end of the document so the pages load faster -->
