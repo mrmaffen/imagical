@@ -49,7 +49,7 @@
             <div class="form-group">
             <label for="inputFile">File input</label>
             {{view ImagicalFileDialog}}
-            <p class="help-block">Choose the textfile which contains your list of keywords to search for.{{fileName}}</p>
+            <p class="help-block">Choose the textfile which contains your list of keywords to search for.</p>
             </div>  
           </div>
           <div class="col-md-2" id="topBar">
@@ -72,7 +72,7 @@
             </button>  
             <div class="list-group" id="sideBar">
               {{#each content.terms}}
-                  {{#link-to 'term' this class='list-group-item'}}
+                  {{#link-to 'term' this class='list-group-item' titleBinding=termText}}
                     {{termText}}
                   {{/link-to}}
               {{/each}}
@@ -85,9 +85,9 @@
     
     <script type="text/x-handlebars" data-template-name="term">
         {{#each content.imageresults}}
-            <div class="col-xs-6 col-sm-4 col-md-3">
-              <a {{bind-attr class=":thumbnail isSelected:selected"}} {{action 'toggleSelected' this}}>
-                <img {{bind-attr src=url}} width="2000" height="2000" alt="...">
+            <div {{bind-attr class=":col-xs-6 :col-sm-4 :col-md-3 isSelected:selected"}} >
+              <a {{bind-attr title=title}} {{action 'toggleSelected' this}}>
+                <img {{bind-attr src=tnUrl}} style="height: 200px; max-width: 200px; display : block; margin : auto;">
               </a>
             </div>
         {{/each}}
@@ -101,9 +101,10 @@
     ================================================== -->
     <script src="js/libs/jquery-1.10.2.min.js"></script>
     <script src="js/libs/handlebars-1.0.0.js"></script>
-    <script src="js/libs/ember.js"></script>
+    <script src="js/libs/ember.min.js"></script>
     <script src="js/libs/ember-data.js"></script>
     <script src="js/libs/localstorage_adapter.js"></script>
+    <script src="js/libs/rsvp-latest.js"></script>
     
     <!-- Custom JavaScript
     ================================================== -->

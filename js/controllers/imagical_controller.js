@@ -18,40 +18,35 @@ Imagical.ImagicalController = Ember.ArrayController.extend({
                 that.transitionToRoute('file', fileRecord);
             
                 for (var i = 0; i < lines.length; i++){
-                    var termRecord = that.store.createRecord('term', {
-                        termText: lines[i]
-                    });
-                    termRecord.get('file').pushObject(fileRecord);
-                    if (i===0){
-                        that.transitionToRoute('term', termRecord);
-                        
-                        for (var j = 0; j < 10; j++ ){
-                            var testRecord = that.store.createRecord('imageresult', {
-                                url: "http://placehold.it/400x350/"+Math.round(Math.random()*9)+"0"+Math.round(Math.random()*9)+"0"+Math.round(Math.random()*9)+"0/ffffff.png&text=test",
-                                thumbNailUrl: "http://placehold.it/400x350/"+Math.round(Math.random()*9)+"0"+Math.round(Math.random()*9)+"0"+Math.round(Math.random()*9)+"0/ffffff.png&text=test"
-                            });
-                            testRecord.save();
-                            termRecord.get('imageresults').pushObject(testRecord);
+                    if (lines[i].length < 100 && i < 500){
+                        var termRecord = that.store.createRecord('term', {
+                            termText: lines[i]
+                        });
+                        termRecord.get('files').pushObject(fileRecord);
+                        termRecord.save();
+                        if (i===0){
+                            that.transitionToRoute('term', termRecord);
                         }
-                    }
-                    termRecord.save();
-                    //fileRecord.get('terms').pushObject(termRecord);
-                    /*this.store.find(Imagical.Term, {termText: tt}).then( 
-                            function(t){
-                                if (t){
-                                    console.log('term ´'+tt+'´ not found, creating new one');
-                                    this.store.createRecord('term', {
-                                            termText: tt
-                                    });
+                        //fileRecord.get('terms').pushObject(termRecord);
+                        /*this.store.find(Imagical.Term, {termText: tt}).then( 
+                                function(t){
+                                    if (t){
+                                        console.log('term ´'+tt+'´ not found, creating new one');
+                                        this.store.createRecord('term', {
+                                                termText: tt
+                                        });
+                                    }
                                 }
-                            }
-                        ).then (
-                            null,
-                            function(reason){
-                                console.error(reason);
-                            }
-                        );             
-                        */
+                            ).then (
+                                null,
+                                function(reason){
+                                    console.error(reason);
+                                }
+                            );             
+                            */
+                    } else{
+                        console.log('Error while reading file: Line too long or too many lines');
+                    }
                 }
             };
 

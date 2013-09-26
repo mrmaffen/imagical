@@ -1,14 +1,19 @@
 Imagical.Imageresult = DS.Model.extend({
+    siteUrl: DS.attr('string'),
+    title: DS.attr('string'),
+    tnUrl: DS.attr('string'),
     url: DS.attr('string'),
-    thumbNailUrl: DS.attr('string'),
-    term: DS.hasMany('term'),
+    terms: DS.hasMany('term'),
     isSelected: DS.attr('boolean')
 });
 
 Imagical.Term = DS.Model.extend({
     termText: DS.attr('string'),
-    imageresults: DS.hasMany('imageresult'),
-    file: DS.hasMany('file')
+    hasBeenQueried: DS.attr('boolean'),
+    imageresults: DS.hasMany('imageresult', {
+        inverse: 'terms'
+    }),
+    files: DS.hasMany('file')
 });
 
 Imagical.File = DS.Model.extend({
