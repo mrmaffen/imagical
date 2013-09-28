@@ -27,6 +27,10 @@
       <div class="container">
   
         <div class="row">
+          <div class="jumbotron">
+            <h1>Imagical</h1>
+            <p>Efficiently download loads of images from different sources by providing a simple list of keywords.</p>
+          </div>
           <div class="col-md-2" id="topBar">
             <label for="">Sources</label>
             <div class="checkbox">
@@ -85,9 +89,9 @@
     
     <script type="text/x-handlebars" data-template-name="term">
         {{#each content.imageresults}}
-            <div {{bind-attr class=":col-xs-6 :col-sm-4 :col-md-3 isSelected:selected"}} >
+            <div {{bind-attr class=":col-xs-6 :col-sm-4 :col-md-3 isSelected:selected"}} style="height:180px;" >
               <a {{bind-attr title=title}} {{action 'toggleSelected' this}}>
-                <img {{bind-attr src=tnUrl}} style="height: 200px; max-width: 200px; display : block; margin : auto;">
+                <img {{bind-attr src=tnUrl}} style="max-width: 100%; height: auto; display : block; margin : auto;">
               </a>
             </div>
         {{/each}}

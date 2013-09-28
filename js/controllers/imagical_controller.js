@@ -27,7 +27,6 @@ Imagical.ImagicalController = Ember.ArrayController.extend({
                         if (i===0){
                             that.transitionToRoute('term', termRecord);
                         }
-                        //fileRecord.get('terms').pushObject(termRecord);
                         /*this.store.find(Imagical.Term, {termText: tt}).then( 
                                 function(t){
                                     if (t){

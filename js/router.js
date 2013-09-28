@@ -14,7 +14,7 @@ Imagical.TermRoute = Ember.Route.extend({
             model.set('hasBeenQueried', false);
         if (!model.get('hasBeenQueried')){
             model.set('hasBeenQueried', true);
-            for (var offset=0; offset <64; offset+=8){
+            for (var offset=0; offset <32; offset+=8){
                 searchGoogle(model.get('termText'), 8, offset).then(function(data) {
                     for (var i = 0; i < data.length; i++ ){
                         var imageResult = that.store.createRecord('imageresult', {
