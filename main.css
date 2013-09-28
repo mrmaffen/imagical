@@ -19,9 +19,9 @@ h4 {
   padding-top: 15px;
   padding-bottom: 15px;
   background-color: #fff;
-  border: 1px solid #ddd;
-  background-color: rgba(ff,ff,ff,1);
-  border: 1px solid rgba(0,0,0,0.2);
+  border: 1px solid #efd;
+  background-color: rgba(0,0,0,0);
+  border: 1px solid #ecf0f1;
 }
 hr {
   margin-top: 40px;

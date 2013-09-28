@@ -10,7 +10,7 @@
     <title>Imagical</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="./dist/css/bootstrap.css" rel="stylesheet">
+    <link href="./dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
     <link href="main.css" rel="stylesheet">
@@ -32,28 +32,28 @@
             <p>Efficiently download loads of images from different sources by providing a simple list of keywords.</p>
           </div>
           <div class="col-md-2" id="topBar">
-            <label for="">Sources</label>
+            <p><strong>Sources</strong></p>
             <div class="checkbox">
             <label>
-              <input type="checkbox"> Wikipedia
+              <input type="checkbox"> <p>Wikipedia</p>
             </label>
             </div>
             <div class="checkbox">
             <label>
-              <input type="checkbox"> WikiCommons
+              <input type="checkbox"> <p>WikiCommons</p>
             </label>
             </div>
             <div class="checkbox">
             <label>
-              <input type="checkbox"> Google
+              <input type="checkbox"> <p>Google</p>
             </label>
             </div>
           </div>
           <div class="col-md-8" id="topBar">
             <div class="form-group">
-            <label for="inputFile">File input</label>
+            <p><strong>File input</strong></p>
             {{view ImagicalFileDialog}}
-            <p class="help-block">Choose the textfile which contains your list of keywords to search for.</p>
+            <p>Choose the textfile which contains your list of keywords to search for.</p>
             </div>  
           </div>
           <div class="col-md-2" id="topBar">
