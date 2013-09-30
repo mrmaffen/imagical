@@ -33,27 +33,19 @@
           </div>
           <div class="col-md-2" id="topBar">
             <p><strong>Sources</strong></p>
+            {{#each}}
             <div class="checkbox">
-            <label>
-              {{input type="checkbox" checked=useWikipedia}} <p>Wikipedia</p>
-            </label>
+              <label>
+                {{input type="checkbox" checked=isEnabled}} <p>{{pluginName}}</p>
+              </label>
             </div>
-            <div class="checkbox">
-            <label>
-              {{input type="checkbox" checked=useWikiCommons}}  <p>WikiCommons</p>
-            </label>
-            </div>
-            <div class="checkbox">
-            <label>
-              {{input type="checkbox" checked=useGoogle}} <p>Google</p>
-            </label>
-            </div>
+            {{/each}}
           </div>
           <div class="col-md-8" id="topBar">
             <div class="form-group">
-            <p><strong>File input</strong></p>
-            {{view ImagicalFileDialog}}
-            <p>Choose the textfile which contains your list of keywords to search for.</p>
+              <p><strong>File input</strong></p>
+              {{view ImagicalFileDialog}}
+              <p>Choose the textfile which contains your list of keywords to search for.</p>
             </div>  
           </div>
           <div class="col-md-2" id="topBar">
@@ -116,11 +108,13 @@
     <script src="js/router.js"></script>
     <script src="js/models/model.js"></script>
     <script src="js/controllers/imagical_controller.js"></script>
-    <!-- Source Javascript
-    ================================================== -->
-    <script src="js/search_plugins/google.js"></script>
-    <script src="js/search_plugins/wiki.js"></script>
     
+    <!-- Search plugins Javascript
+    ================================================== -->
+    <script src="js/search_plugins/wiki.js"></script>   
+    <script src="js/search_plugins/wikipedia.js"></script>   
+    <script src="js/search_plugins/wikicommons.js"></script>  
+    <script src="js/search_plugins/google.js"></script>    
     
     <!-- Placed at the end of the document so the pages load faster -->
   </body>

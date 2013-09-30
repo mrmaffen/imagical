@@ -7,10 +7,6 @@
 */
 
 function searchWiki (keyWord, useWikiCommons, locale){
-        if (useWikiCommons)
-                this.name = "WikiCommons";
-        else
-                this.name = "Wikipedia";
         /*
         * thumbWidth:   Width (px) of the thumbnail provided by the tnUrl.
         * imgLimit:     maximum of images to be returned from the imgQuery.
@@ -21,13 +17,14 @@ function searchWiki (keyWord, useWikiCommons, locale){
         */
         var thumbWidth = 200;
         var imgLimit = 32;
+        keyWord = keyWord.replace(' ', '%20');
         var promise = RSVP.Promise(function(resolve, reject){
                 if( !(keyWord == "") && thumbWidth > 0 && imgLimit > 0 && imgLimit <= 500){
 
                         var resultArray = new Array();
                         var titleQueryURL = useWikiCommons?"http://commons.wikimedia.org":"http://" + locale + ".wikipedia.org";
                         titleQueryURL += "/w/api.php?action=query&format=json&callback=?&titles=" + keyWord + "&prop=images&imlimit=" + imgLimit + "&redirects";
-                        console.log('url: '+titleQueryURL);
+                        //console.log('url: '+titleQueryURL);
 
                         //Query for a list of images
                         $.ajax({
@@ -39,7 +36,10 @@ function searchWiki (keyWord, useWikiCommons, locale){
                                 for (var imageObject in data.query.pages){
                                         for( var i=0; i < data.query.pages[imageObject].images.length; i++){
                                                 var imgTitle = data.query.pages[imageObject].images[i].title;
-                                                if (isRelevantImage(imgTitle.substring(imgTitle.indexOf(':')+1, imgTitle.length))){
+						var cleanImgTitle = imgTitle.substring(imgTitle.indexOf(':')+1, imgTitle.length);
+						cleanImgTitle = cleanImgTitle.substring(0, cleanImgTitle.indexOf('.'));
+						cleanImgTitle = cleanImgTitle.toLowerCase();
+                                                if (isRelevantImage(cleanImgTitle)){
                                                         titleArray.push(imgTitle);
                                                 }
                                         }
@@ -62,10 +62,8 @@ function searchWiki (keyWord, useWikiCommons, locale){
                                         }));
                                 }
                                 RSVP.all(promises).then (function(imgDataArray) {
-                                        console.dir(imgDataArray);
                                         for (var k=0; k< imgDataArray.length;k++){
 						var imgData = imgDataArray[k];
-						console.dir(imgData);
                                                 for( var page in imgData.query.pages){
                                                         try{
                                                                 descrUrl = imgData.query.pages[page].imageinfo['0'].descriptionurl;
@@ -109,21 +107,29 @@ function searchWiki (keyWord, useWikiCommons, locale){
  */
 function isRelevantImage(imgName){
         switch(imgName){
-		case "Commons-logo.svg":
+		case "commons-logo":
 			return false;
-		case "Disambig-dark.svg":
+		case "disambig-dark":
 			return false;
-		case "Qsicon Ueberarbeiten.svg":
+		case "qsicon ueberarbeiten":
 			return false;
-		case "Wikiquote-logo.svg":
+		case "wikiquote-logo":
 			return false;
-		case "Wikisource-logo.svg":
+		case "wikisource-logo":
 			return false;
-		case "Wiktfavicon en.svg":
+		case "wiktfavicon en":
 			return false;
-		case "Wikispecies-logo.svg":
+		case "wikispecies-logo":
 			return false;
-		case "Wikiversity-logo.svg":
+		case "system-search":
+			return false;
+		case "cscr-featured":
+			return false;
+		case "karte gruenes deutschland":
+			return false;
+		case "qsicon Quelle":
+			return false;
+		case "wikiversity-logo":
 			return false;
 		default:
 			return true;
