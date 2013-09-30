@@ -35,17 +35,17 @@
             <p><strong>Sources</strong></p>
             <div class="checkbox">
             <label>
-              <input type="checkbox"> <p>Wikipedia</p>
+              {{input type="checkbox" checked=useWikipedia}} <p>Wikipedia</p>
             </label>
             </div>
             <div class="checkbox">
             <label>
-              <input type="checkbox"> <p>WikiCommons</p>
+              {{input type="checkbox" checked=useWikiCommons}}  <p>WikiCommons</p>
             </label>
             </div>
             <div class="checkbox">
             <label>
-              <input type="checkbox"> <p>Google</p>
+              {{input type="checkbox" checked=useGoogle}} <p>Google</p>
             </label>
             </div>
           </div>
@@ -91,7 +91,7 @@
         {{#each content.imageresults}}
             <div {{bind-attr class=":col-xs-6 :col-sm-4 :col-md-3 isSelected:selected"}} style="height:180px;" >
               <a {{bind-attr title=title}} {{action 'toggleSelected' this}}>
-                <img {{bind-attr src=tnUrl}} style="max-width: 100%; height: auto; display : block; margin : auto;">
+                <img class="imgTile" {{bind-attr src=tnUrl}}>
               </a>
             </div>
         {{/each}}
@@ -119,6 +119,7 @@
     <!-- Source Javascript
     ================================================== -->
     <script src="js/search_plugins/google.js"></script>
+    <script src="js/search_plugins/wiki.js"></script>
     
     
     <!-- Placed at the end of the document so the pages load faster -->

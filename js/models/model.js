@@ -13,7 +13,9 @@ Imagical.Term = DS.Model.extend({
     imageresults: DS.hasMany('imageresult', {
         inverse: 'terms'
     }),
-    files: DS.hasMany('file')
+    files: DS.hasMany('file', {
+        inverse: 'terms'
+    })
 });
 
 Imagical.File = DS.Model.extend({

@@ -9,13 +9,13 @@ Imagical.Router.map(function() {
 Imagical.TermRoute = Ember.Route.extend({
     setupController: function(controller, model){
         var that = this;
-        console.log(model.get('id') + ' "' + model.get('termText') + '"');
+        console.log('Querying for "' + model.get('termText') + '"');
         if (!model.get('imageresults'))
             model.set('hasBeenQueried', false);
         if (!model.get('hasBeenQueried')){
             model.set('hasBeenQueried', true);
-            for (var offset=0; offset <32; offset+=8){
-                searchGoogle(model.get('termText'), 8, offset).then(function(data) {
+                searchWiki(model.get('termText'), false, "en").then(function(data) {
+                    console.dir(data);
                     for (var i = 0; i < data.length; i++ ){
                         var imageResult = that.store.createRecord('imageresult', {
                             siteUrl: data[i].siteUrl,
@@ -26,12 +26,9 @@ Imagical.TermRoute = Ember.Route.extend({
                         imageResult.get('terms').pushObject(model);
                         imageResult.save();
                     }
-                }, function(reason) {
-                    console.error(reason);
                 }).then(null, function(reason){
                     console.error(reason);
                 });
-            }
         }
         
         controller.set('model', model);
