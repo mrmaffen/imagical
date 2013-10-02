@@ -14,16 +14,14 @@ Imagical.ImagicalController = Ember.ArrayController.extend({
                 var fileRecord = that.store.createRecord('file', {
                     fileName: file.name
                 });
-                fileRecord.save();
                 that.transitionToRoute('file', fileRecord);
             
                 for (var i = 0; i < lines.length; i++){
-                    if (lines[i].length < 100 && i < 500){
+                    if (lines[i].length < 100 && i < 1000){
                         var termRecord = that.store.createRecord('term', {
                             termText: lines[i]
                         });
                         termRecord.get('files').pushObject(fileRecord);
-                        termRecord.save();
                         if (i===0){
                             that.transitionToRoute('term', termRecord);
                         }
