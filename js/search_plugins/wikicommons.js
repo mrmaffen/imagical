@@ -6,7 +6,7 @@
 */
 
 Imagical.imagicalController.get('searchPlugins').push(SearchPlugin.create({
-    isEnabled: false,
+    isEnabled: true,
 	pluginName: "WikiCommons",
 	pluginFunction: function (keyWord){
                         return searchWiki(keyWord, true, "", "WikiCommons");
