@@ -11,7 +11,7 @@
 //		sites 2, 3 etc.
 
 // Loop through the 8 pages
-searchPlugins.push({
+Imagical.imagicalController.get('searchPlugins').push(SearchPlugin.create({
     isEnabled: true,
 	pluginName: "Google",
 	pluginFunction: function (keyWord) {
@@ -43,7 +43,9 @@ searchPlugins.push({
                                                 //DirectLink
                                                 url: currentImg.url,
                                                 //URL mit der Seite des Bilds
-                                                siteUrl: currentImg.originalContextUrl
+                                                siteUrl: currentImg.originalContextUrl,
+                                                //Name dieses Plugins
+                                                pluginName: "Google"
                                             });
                                         }
                                     }
@@ -55,4 +57,4 @@ searchPlugins.push({
                         });
                         return promise;
                     }
-});
+}));

@@ -5,10 +5,10 @@
 *                       For example: 'de', 'en', 'nl', ...
 */
 
-searchPlugins.push({
-        isEnabled: true,
+Imagical.imagicalController.get('searchPlugins').push(SearchPlugin.create({
+    isEnabled: false,
 	pluginName: "WikiCommons",
 	pluginFunction: function (keyWord){
-				return searchWiki(keyWord, true, "");
-			}
-});
+                        return searchWiki(keyWord, true, "", "WikiCommons");
+                    }
+}));

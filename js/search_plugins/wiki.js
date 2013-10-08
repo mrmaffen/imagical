@@ -6,7 +6,7 @@
 *                       For example: 'de', 'en', 'nl', ...
 */
 
-function searchWiki (keyWord, useWikiCommons, locale){
+function searchWiki (keyWord, useWikiCommons, locale, pluginName){
         /*
         * thumbWidth:   Width (px) of the thumbnail provided by the tnUrl.
         * imgLimit:     maximum of images to be returned from the imgQuery.
@@ -34,15 +34,17 @@ function searchWiki (keyWord, useWikiCommons, locale){
                                 //query success! lets get those imageTitles to continue searching for!
                                 var titleArray = new Array();
                                 for (var imageObject in data.query.pages){
+                                    if (data.query.pages[imageObject].images){
                                         for( var i=0; i < data.query.pages[imageObject].images.length; i++){
                                                 var imgTitle = data.query.pages[imageObject].images[i].title;
-						var cleanImgTitle = imgTitle.substring(imgTitle.indexOf(':')+1, imgTitle.length);
-						cleanImgTitle = cleanImgTitle.substring(0, cleanImgTitle.indexOf('.'));
-						cleanImgTitle = cleanImgTitle.toLowerCase();
+                                                var cleanImgTitle = imgTitle.substring(imgTitle.indexOf(':')+1, imgTitle.length);
+                                                cleanImgTitle = cleanImgTitle.substring(0, cleanImgTitle.indexOf('.'));
+                                                cleanImgTitle = cleanImgTitle.toLowerCase();
                                                 if (isRelevantImage(cleanImgTitle)){
                                                         titleArray.push(imgTitle);
                                                 }
                                         }
+                                    }
                                 }
                                 //titleArray is now filled with all relevant titles!
 
@@ -82,7 +84,9 @@ function searchWiki (keyWord, useWikiCommons, locale){
                                                                         //DirectLink
                                                                         url: directUrl,
                                                                         //URL mit der Seite des Bilds
-                                                                        siteUrl: descrUrl
+                                                                        siteUrl: descrUrl,
+                                                                        //Name dieses Plugins
+                                                                        pluginName: pluginName
                                                                 });
                                                         }
                                                         catch(err){
