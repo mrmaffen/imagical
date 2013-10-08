@@ -25,14 +25,16 @@ Imagical.TermRoute = Ember.Route.extend({
     setupController: function(controller, model, queryParams){
         var pluginsToShow = parseQueryString(queryParams.show);
         var searchPlugins = Imagical.imagicalController.get('searchPlugins');
-        for (var i=0;i<pluginsToShow.length;i++){
-            var pluginToEnable = searchPlugins.findBy('pluginName', pluginsToShow[i]);
-            if (pluginToEnable)
-                pluginToEnable.set('isEnabled', true);
-        }
         
         var that = this;
         for (var i=0;i<searchPlugins.length;i++){
+            searchPlugins[i].set('isEnabled', false);
+            for (var j=0;j<pluginsToShow.length;j++){
+                if (searchPlugins[i].get('pluginName') == pluginsToShow[j]){
+                    //console.log('enabled plugin: '+pluginsToShow[j]);
+                    searchPlugins[i].set('isEnabled', true);
+                }
+            }
             if (searchPlugins[i].get('isEnabled')){
                 var pluginFunction = searchPlugins[i].get('pluginFunction');
                 console.log('Querying "'+searchPlugins[i].get('pluginName')+'" for "' + model.get('termText') + '"');
