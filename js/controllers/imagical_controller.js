@@ -48,11 +48,31 @@ Imagical.ImagicalController = Ember.ArrayController.extend({
         },
         updateRouteQueryParams: function(){
             console.log("updateRouteQueryParams");
+        },
+        saveOutputFile: function(){
+            
         }
     }
 });
 
 Imagical.imagicalController = Imagical.ImagicalController.create();
+
+Imagical.FileController = Ember.ObjectController.extend({
+    needs: 'term',
+    actions: {
+        nextTerm: function() {
+            var currentTerm = this.get('controllers.term').get('model');
+            var terms = this.store.all('term');
+            var nextTermIndex = terms.indexOf(currentTerm)+1;  
+            console.dir(terms);
+            console.log(nextTermIndex);
+            console.log(terms.content.length);            
+            if (nextTermIndex < terms.content.length){
+                this.transitionToRoute('term', terms.objectAt(nextTermIndex));
+            }
+        }
+    }
+});
 
 Imagical.TermController = Ember.ObjectController.extend({
     needs: 'imagical',

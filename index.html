@@ -62,7 +62,7 @@
     
     <script type="text/x-handlebars" data-template-name="file">
           <div class="col-md-2">
-            <button type="input" class="btn btn-default" id="nextButton">
+            <button type="input" class="btn btn-default" id="nextButton" {{action 'nextTerm'}}>
               <span class="glyphicon glyphicon-chevron-right"></span>
               Next term
             </button>  
@@ -101,6 +101,10 @@
     <script src="js/libs/ember-data.min.js"></script>
     <script src="js/libs/localstorage_adapter.js"></script>
     <script src="js/libs/rsvp-latest.js"></script>
+    
+    <!-- Other libs JavaScript
+    ================================================== -->
+    <script src="js/libs/jszip.js"></script>
     
     <!-- Custom JavaScript
     ================================================== -->
