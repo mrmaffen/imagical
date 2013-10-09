@@ -29,7 +29,7 @@ Imagical.ImagicalController = Ember.ArrayController.extend({
                 that.transitionToRoute('file', fileRecord);
             
                 for (var i = 0; i < lines.length; i++){
-                    if (lines[i].length < 100 && i < 1000){
+                    if (lines[i].length < 100 && lines[i].length > 0 && i < 1000){
                         var termRecord = that.store.createRecord('term', {
                             termText: lines[i]
                         });
@@ -39,20 +39,20 @@ Imagical.ImagicalController = Ember.ArrayController.extend({
                         }
                         termRecord.save();
                     } else{
-                        console.log('Error while reading file: Line too long or too many lines');
+                        console.log('Error while reading file: Line too long or empty or over 1000 lines');
                     }
                 }
             };
 
             reader.readAsText(file, "UTF-8");
-        },
-        updateRouteQueryParams: function(){
-            console.log("updateRouteQueryParams");
-        },
-        saveOutputFile: function(){
-            
         }
-    }
+    },
+    saveButtonHref: function(){
+        var zip = new JSZip();
+        zip.file("Hello.txt", "Hello world\n");
+        return window.URL.createObjectURL(zip.generate({type:"blob"}));
+    }.property('controllers.term.imageresults.@each.isSelected'),
+    isGeneratingZip: true
 });
 
 Imagical.imagicalController = Imagical.ImagicalController.create();
@@ -63,10 +63,7 @@ Imagical.FileController = Ember.ObjectController.extend({
         nextTerm: function() {
             var currentTerm = this.get('controllers.term').get('model');
             var terms = this.store.all('term');
-            var nextTermIndex = terms.indexOf(currentTerm)+1;  
-            console.dir(terms);
-            console.log(nextTermIndex);
-            console.log(terms.content.length);            
+            var nextTermIndex = terms.indexOf(currentTerm)+1;     
             if (nextTermIndex < terms.content.length){
                 this.transitionToRoute('term', terms.objectAt(nextTermIndex));
             }
@@ -92,6 +89,13 @@ Imagical.TermController = Ember.ObjectController.extend({
         console.dir(results);
         return results;
     }.property('model.imageresults.@each', 'controllers.imagical.pluginsToShow'),
+    waitingForResultCount: 0,
+    isSearching: function(){
+        if (this.get('waitingForResultCount') > 0)
+            return true;
+        else
+            return false;
+    }.property('waitingForResultCount')
 });
 
 function createQueryString(pluginsToShow){

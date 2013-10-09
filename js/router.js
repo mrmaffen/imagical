@@ -8,7 +8,7 @@ Imagical.Router.map(function() {
 
 Imagical.ImagicalRoute = Ember.Route.extend({
     model: function(){
-        return Imagical.imagicalController.get('searchPlugins');
+        return this.controllerFor('imagical').get('searchPlugins');
     }
 });
 
@@ -24,7 +24,7 @@ Imagical.TermRoute = Ember.Route.extend({
     },
     setupController: function(controller, model, queryParams){
         var pluginsToShow = parseQueryString(queryParams.show);
-        var searchPlugins = Imagical.imagicalController.get('searchPlugins');
+        var searchPlugins = this.controllerFor('imagical').get('searchPlugins');
         
         var that = this;
         for (var i=0;i<searchPlugins.length;i++){
@@ -38,7 +38,9 @@ Imagical.TermRoute = Ember.Route.extend({
             if (searchPlugins[i].get('isEnabled')){
                 var pluginFunction = searchPlugins[i].get('pluginFunction');
                 console.log('Querying "'+searchPlugins[i].get('pluginName')+'" for "' + model.get('termText') + '"');
+                controller.set('waitingForResultCount', controller.get('waitingForResultCount') + 1);
                 pluginFunction(model.get('termText')).then(function(data) {
+                    controller.set('waitingForResultCount', controller.get('waitingForResultCount') - 1);
                     for (var j = 0; j < data.length; j++ ){
                         if (!model.get('imageresults').anyBy('url', data[j].url)){
                             var imageResult = that.store.createRecord('imageresult', {
@@ -53,6 +55,7 @@ Imagical.TermRoute = Ember.Route.extend({
                         }
                     }
                 }).then(null, function(reason){
+                    controller.set('waitingForResultCount', controller.get('waitingForResultCount') - 1);
                     console.error(reason);
                 });
             }
