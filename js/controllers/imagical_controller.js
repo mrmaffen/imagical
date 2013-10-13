@@ -1,6 +1,6 @@
 Imagical.ImagicalController = Ember.ArrayController.extend({
-    searchPlugins: [
-    ],
+    needs: ['term', 'file'],
+    searchPlugins: Imagical.searchPlugins,
     pluginsToShow: function(){
         var plugins = this.get('searchPlugins');
         return plugins.filterBy('isEnabled', true);
@@ -47,22 +47,74 @@ Imagical.ImagicalController = Ember.ArrayController.extend({
             reader.readAsText(file, "UTF-8");
         }
     },
-    saveButtonHref: function(){
-        var zip = new JSZip();
-        zip.file("Hello.txt", "Hello world\n");
-        return window.URL.createObjectURL(zip.generate({type:"blob"}));
-    }.property('controllers.term.imageresults.@each.isSelected'),
-    isGeneratingZip: true
+    saveButton: function(){
+        var that = this;
+        var indexFileString = "Index-file\n----------\n\n";
+        var promises = [];
+        var promiseInfos = [];
+        var terms = this.get('controllers.file').get('terms');
+        for (var i = 0; terms && i < terms.content.length; i++){
+            var imageResults = terms.content[i].get('imageresults');
+            if (imageResults){
+                var selectedImageResults = imageResults.filterBy('isSelected');
+                for (var j = 0; selectedImageResults && j < selectedImageResults.length; j++){
+                    promiseInfos.push({
+                        termText: terms.content[i].get('termText'),
+                        selectedImageResult: selectedImageResults[j]
+                    });
+                }
+            }
+        }
+        if (!isPromiseInfosEqual(this.get('lastRequestBatch'), promiseInfos)){
+            this.set('lastRequestBatch', promiseInfos);
+            for (var i = 0; i < promiseInfos.length; i++){
+                var url = promiseInfos[i].selectedImageResult.get('url');
+                promises.push(promisingXHR(url));
+                this.set('isGeneratingZip', true);
+            }
+        }
+        if (promises.length > 0){
+            RSVP.all(promises).then (function (imgDataArray) {
+                var zip = new JSZip();
+                var lastTermText;
+                var termTextCounter = 0;
+                for (var i = 0; i < imgDataArray.length; i++){
+                    if (imgDataArray[i]){
+                        var promiseInfo = promiseInfos[i];
+                        var url = promiseInfo.selectedImageResult.get('url');
+                        var termText = promiseInfo.termText;
+                        if (termText != lastTermText){
+                            termTextCounter = 0;
+                        } else {
+                            termTextCounter++;
+                        }
+                        lastTermText = termText;
+                        var fileType = url.substring(url.lastIndexOf('.'), url.length);
+                        var fileName = termText.replace(/ /g, '_') + prependZeros(termTextCounter) + fileType;
+                        indexFileString += fileName + "\n";
+                        indexFileString += promiseInfo.selectedImageResult.get('siteUrl') + "\n";
+                        indexFileString += url + "\n\n";
+                        zip.file(fileName, imgDataArray[i], {binary: true});
+                    }
+                }
+                console.log(indexFileString);
+                zip.file("index-file.txt", indexFileString);
+                that.set('isGeneratingZip', false);
+                that.set('saveButtonHref', window.URL.createObjectURL(zip.generate({type:"blob"})));
+            });
+        }
+    }.observes('controllers.term.imageresults.@each.isSelected'),
+    lastRequestBatch: null,
+    saveButtonHref: "#",
+    isGeneratingZip: false
 });
 
-Imagical.imagicalController = Imagical.ImagicalController.create();
-
 Imagical.FileController = Ember.ObjectController.extend({
-    needs: 'term',
+    needs: ['term', 'file'],
     actions: {
         nextTerm: function() {
             var currentTerm = this.get('controllers.term').get('model');
-            var terms = this.store.all('term');
+            var terms = this.get('controllers.file').get('terms');
             var nextTermIndex = terms.indexOf(currentTerm)+1;     
             if (nextTermIndex < terms.content.length){
                 this.transitionToRoute('term', terms.objectAt(nextTermIndex));
@@ -110,4 +162,43 @@ function createQueryString(pluginsToShow){
 
 function parseQueryString(queryString){
     return queryString.split(",");
+}
+
+function prependZeros(numberString){
+    numberString = String(numberString);
+    while (numberString.length < 5){
+        numberString = "0" + numberString;
+    }
+    return numberString;
+}
+
+function promisingXHR(url) {
+  var promise = new RSVP.Promise(function(resolve, reject){
+    var client = new XMLHttpRequest();
+    client.open("GET", url);
+    client.overrideMimeType('text/plain; charset=x-user-defined');
+    client.onreadystatechange = handler;
+    client.send();
+
+    function handler() {
+      if (this.readyState === this.DONE) {
+        if (this.status === 200) { resolve(this.response); }
+        else { reject(null); }
+      }
+    };
+  });
+
+  return promise;
+}
+
+function isPromiseInfosEqual(first, second){
+    if (first == null || second == null || first.length != second.length){
+        return false;
+    }
+    for (var i = 0; i < first.length; i++){
+        if (first[i].selectedImageResult.get('url') != second[i].selectedImageResult.get('url')){
+            return false;
+        }
+    }
+    return true;
 }

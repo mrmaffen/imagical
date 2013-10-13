@@ -11,7 +11,7 @@
 //		sites 2, 3 etc.
 
 // Loop through the 8 pages
-Imagical.imagicalController.get('searchPlugins').push(SearchPlugin.create({
+Imagical.searchPlugins.push(SearchPlugin.create({
     isEnabled: true,
 	pluginName: "Google",
 	pluginFunction: function (keyWord) {

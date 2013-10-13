@@ -31,3 +31,5 @@ SearchPlugin = Ember.Object.extend({
     pluginName: null,
     pluginFunction : null
 });
+
+Imagical.searchPlugins = [];

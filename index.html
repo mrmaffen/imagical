@@ -31,41 +31,43 @@
                 <h1>Imagical</h1>
                 <p>Efficiently download loads of images from different sources by providing a simple list of keywords.</p>
               </div>
-              <div class="col-md-2" id="topBar">
-                <p><strong>Sources</strong></p>
-                {{#each}}
-                <div class="checkbox">
-                  <label>
-                    {{input type="checkbox" checked=isEnabled}} <p>{{pluginName}}</p>
-                  </label>
-                </div>
-                {{else}}
-                    No search plugins available.
-                {{/each}}
-              </div>
-              <div class="col-md-8" id="topBar">
-                <div class="form-group">
-                  <p><strong>File input</strong></p>
-                  {{view ImagicalFileDialog}}
-                  <p>Choose the textfile which contains your list of keywords to search for.</p>
-                </div>  
-              </div>
-              <div class="col-md-2" id="topBar">
-                {{#if isGeneratingZip}}
-                    <button type="input" {{bind-attr class=":btn :btn-default isGeneratingZip:generatingZip"}} id="saveButton" >        
-                      <span class="glyphicon glyphicon-floppy-save"></span>
-                      Save
-                    </button>  
-                {{else}}
-                    <a {{bind-attr href=saveButtonHref}} download="imageBundle.zip">          
+              <div class="col-md-12" id="topBarContainer">
+                  <div class="col-md-2" id="topBar">
+                    <p><strong>Sources</strong></p>
+                    {{#each}}
+                    <div class="checkbox">
+                      <label>
+                        {{input type="checkbox" checked=isEnabled}} <p>{{pluginName}}</p>
+                      </label>
+                    </div>
+                    {{else}}
+                        No search plugins available.
+                    {{/each}}
+                  </div>
+                  <div class="col-md-8" id="topBar">
+                    <div class="form-group">
+                      <p><strong>File input</strong></p>
+                      {{view ImagicalFileDialog}}
+                      <p>Choose the textfile which contains your list of keywords to search for.</p>
+                    </div>  
+                  </div>
+                  <div class="col-md-2" id="topBar">
+                    {{#if isGeneratingZip}}
                         <button type="input" {{bind-attr class=":btn :btn-default isGeneratingZip:generatingZip"}} id="saveButton" >        
                           <span class="glyphicon glyphicon-floppy-save"></span>
                           Save
                         </button>  
-                    </a>
-                {{/if}}
-              </div>
-              {{outlet}}
+                    {{else}}
+                        <a {{bind-attr href=saveButtonHref}} download="imageBundle.zip">          
+                            <button type="input" {{bind-attr class=":btn :btn-default isGeneratingZip:generatingZip"}} id="saveButton" >        
+                              <span class="glyphicon glyphicon-floppy-save"></span>
+                              Save
+                            </button>  
+                        </a>
+                    {{/if}}
+                  </div>
+                </div>
+                  {{outlet}}
             </div>
   
         </div> <!-- /container -->    

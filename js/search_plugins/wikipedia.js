@@ -5,7 +5,7 @@
 *                       For example: 'de', 'en', 'nl', ...
 */
 
-Imagical.imagicalController.get('searchPlugins').push(SearchPlugin.create({
+Imagical.searchPlugins.push(SearchPlugin.create({
     isEnabled: true,
 	pluginName: "Wikipedia",
 	pluginFunction: function (keyWord){

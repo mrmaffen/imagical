@@ -38,7 +38,7 @@ function searchWiki (keyWord, useWikiCommons, locale, pluginName){
                                         for( var i=0; i < data.query.pages[imageObject].images.length; i++){
                                                 var imgTitle = data.query.pages[imageObject].images[i].title;
                                                 var cleanImgTitle = imgTitle.substring(imgTitle.indexOf(':')+1, imgTitle.length);
-                                                cleanImgTitle = cleanImgTitle.substring(0, cleanImgTitle.indexOf('.'));
+                                                cleanImgTitle = cleanImgTitle.substring(0, cleanImgTitle.lastIndexOf('.'));
                                                 cleanImgTitle = cleanImgTitle.toLowerCase();
                                                 if (isRelevantImage(cleanImgTitle)){
                                                         titleArray.push(imgTitle);
