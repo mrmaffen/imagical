@@ -1,40 +1,39 @@
 Imagical.Router.map(function() {
   this.resource('imagical', { path: '/' }, function(){
-    this.resource('file', { path: ':file_id'}, function(){
-        this.resource('term', { path: ':term_id', queryParams: ['show']});
+    this.resource('file', { path: '/file/:file_id'}, function(){
+        this.resource('term', { path: '/term/:term_id', queryParams: ['show']});
     });
   });
 });
 
 Imagical.ImagicalRoute = Ember.Route.extend({
     model: function(){
+        console.log("imagicalmodel:");
+        console.dir(this.controllerFor('imagical').get('searchPlugins'));
         return this.controllerFor('imagical').get('searchPlugins');
     }
 });
 
 Imagical.FileRoute = Ember.Route.extend({
     model: function(params) {
+        console.log("filemodel:");
+        console.dir(this.store.find('file', params.file_id));
         return this.store.find('file', params.file_id);
     }
 });
 
 Imagical.TermRoute = Ember.Route.extend({
     model: function(params) {
+        console.log("termmodel:");
+        console.dir(this.store.find('term', params.term_id));
         return this.store.find('term', params.term_id);
     },
     setupController: function(controller, model, queryParams){
-        var pluginsToShow = parseQueryString(queryParams.show);
+        console.log("setupcontroller");
         var searchPlugins = this.controllerFor('imagical').get('searchPlugins');
         
         var that = this;
         for (var i=0;i<searchPlugins.length;i++){
-            searchPlugins[i].set('isEnabled', false);
-            for (var j=0;j<pluginsToShow.length;j++){
-                if (searchPlugins[i].get('pluginName') == pluginsToShow[j]){
-                    //console.log('enabled plugin: '+pluginsToShow[j]);
-                    searchPlugins[i].set('isEnabled', true);
-                }
-            }
             if (searchPlugins[i].get('isEnabled')){
                 var pluginFunction = searchPlugins[i].get('pluginFunction');
                 console.log('Querying "'+searchPlugins[i].get('pluginName')+'" for "' + model.get('termText') + '"');

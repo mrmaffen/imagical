@@ -2,10 +2,12 @@ Imagical.ImagicalController = Ember.ArrayController.extend({
     needs: ['term', 'file'],
     searchPlugins: Imagical.searchPlugins,
     pluginsToShow: function(){
+        console.log("pluginstoshow");
         var plugins = this.get('searchPlugins');
         return plugins.filterBy('isEnabled', true);
     }.property('@each.isEnabled'),
     checkboxChanged: function(){
+        console.log("checkboxchanged");
         Ember.run.next(this, function() {
             this.transitionToRoute({queryParams: {show: createQueryString(this.get('pluginsToShow'))}});
         });
@@ -34,10 +36,10 @@ Imagical.ImagicalController = Ember.ArrayController.extend({
                             termText: lines[i]
                         });
                         termRecord.get('files').pushObject(fileRecord);
+                        termRecord.save();
                         if (i===0){
                             that.transitionToRoute('term', termRecord, {queryParams: {show: createQueryString(that.get('pluginsToShow'))}});
                         }
-                        termRecord.save();
                     } else{
                         console.log('Error while reading file: Line too long or empty or over 1000 lines');
                     }
@@ -99,7 +101,7 @@ Imagical.ImagicalController = Ember.ArrayController.extend({
                         zip.file(fileName, imgDataArray[i], {binary: true});
                     }
                 }
-                console.log(indexFileString);
+                //console.log(indexFileString);
                 zip.file("index-file.txt", indexFileString);
                 that.set('saveButtonHref', window.URL.createObjectURL(zip.generate({type:"blob"})));
                 that.set('waitingForResultCount', that.get('waitingForResultCount') - 1);
@@ -121,6 +123,7 @@ Imagical.FileController = Ember.ObjectController.extend({
     needs: ['term', 'file'],
     actions: {
         nextTerm: function() {
+        console.log("nextterm");
             var currentTerm = this.get('controllers.term').get('model');
             var terms = this.get('controllers.file').get('terms');
             var nextTermIndex = terms.indexOf(currentTerm)+1;     
@@ -134,6 +137,7 @@ Imagical.FileController = Ember.ObjectController.extend({
 Imagical.TermController = Ember.ObjectController.extend({
     needs: 'imagical',
     filteredImageresults: function(){
+        console.log("filteredimageresults");
         var results;
         var pluginsToShow = this.get('controllers.imagical').get('pluginsToShow');
         for (var i=0;i<pluginsToShow.length;i++){
