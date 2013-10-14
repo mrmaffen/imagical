@@ -67,10 +67,12 @@ Imagical.ImagicalController = Ember.ArrayController.extend({
         }
         if (!isPromiseInfosEqual(this.get('lastRequestBatch'), promiseInfos)){
             this.set('lastRequestBatch', promiseInfos);
+            if (promiseInfos.length > 0) {
+                this.set('waitingForResultCount', this.get('waitingForResultCount') + 1);
+            }
             for (var i = 0; i < promiseInfos.length; i++){
                 var url = promiseInfos[i].selectedImageResult.get('url');
                 promises.push(promisingXHR(url));
-                this.set('isGeneratingZip', true);
             }
         }
         if (promises.length > 0){
@@ -99,14 +101,20 @@ Imagical.ImagicalController = Ember.ArrayController.extend({
                 }
                 console.log(indexFileString);
                 zip.file("index-file.txt", indexFileString);
-                that.set('isGeneratingZip', false);
                 that.set('saveButtonHref', window.URL.createObjectURL(zip.generate({type:"blob"})));
+                that.set('waitingForResultCount', that.get('waitingForResultCount') - 1);
             });
         }
     }.observes('controllers.term.imageresults.@each.isSelected'),
     lastRequestBatch: null,
     saveButtonHref: "#",
-    isGeneratingZip: false
+    waitingForResultCount: 0,
+    isGeneratingZip: function(){
+        if (this.get('waitingForResultCount') > 0)
+            return true;
+        else
+            return false;
+    }.property('waitingForResultCount')
 });
 
 Imagical.FileController = Ember.ObjectController.extend({
