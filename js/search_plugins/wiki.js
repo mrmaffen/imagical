@@ -4,6 +4,7 @@
 * useWikiCommons:       boolean switch. If true, search WikiCommons, otherwise Wikipedia
 * locale:               Which wiki to search. Can be any valid wikipedia location url prefix.
 *                       For example: 'de', 'en', 'nl', ...
+* pluginName:           PluginName of the calling plugin
 */
 
 function searchWiki (keyWord, useWikiCommons, locale, pluginName){
@@ -77,15 +78,15 @@ function searchWiki (keyWord, useWikiCommons, locale, pluginName){
                                                                 imgName = imgName.substring(imgName.indexOf(':')+1, imgName.length);
 
                                                                 resultArray.push({
-                                                                        //Anzeigename des Bilds
+                                                                        //Title of the image
                                                                         title: imgName,
                                                                         //Thumbnail URL
                                                                         tnUrl: thumbUrl,
-                                                                        //DirectLink
+                                                                        //DirectLink to the image
                                                                         url: directUrl,
-                                                                        //URL mit der Seite des Bilds
+                                                                        //URL of the corresponding website
                                                                         siteUrl: descrUrl,
-                                                                        //Name dieses Plugins
+                                                                        //Name of this plugin
                                                                         pluginName: pluginName
                                                                 });
                                                         }

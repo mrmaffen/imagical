@@ -1,26 +1,23 @@
-//	The google-API allows a maximum of 64 images,
-//	spread over 8 pages, to be returned.
-//
-//	URL-Parameters:
-//	"&rsz=8"
-//		8 images per page (maximum value)
-//
-//	"&start=img"
-//		Each resultset can only contain the images
-//		of one page. The start-Parameter is an offset to access
-//		sites 2, 3 etc.
-
-// Loop through the 8 pages
 Imagical.searchPlugins.push(SearchPlugin.create({
     isEnabled: true,
 	pluginName: "Google",
 	pluginFunction: function (keyWord) {
-                        var stepSize = 8;
-                        // google API doesnt automatically normalize searchterms    
-                        keyWord = keyWord.replace(' ', '%20');
+                        var stepSize = 8; //maximum step-size
+                        keyWord = keyWord.replace(' ', '%20');// google API doesnt automatically normalize searchterms    
                         var promise = RSVP.Promise(function(resolve, reject){
                             var promises = [];
                             for (var offset = 0;offset < 32;offset += stepSize){
+                                //	The google-API allows a maximum of 64 images,
+                                //	spread over 8 pages, to be returned.
+                                //
+                                //	URL-Parameters:
+                                //	"&rsz=stepSize"
+                                //		stepSize images per page (maximum value)
+                                //
+                                //	"&start=offset"
+                                //		Each resultset can only contain the images
+                                //		of one page. The start-Parameter is an offset to access
+                                //		sites 2, 3 etc.
                                 promises.push($.ajax({
                                         url: "https://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=" + keyWord + "&rsz=" + stepSize + "&start=" + offset,
                                         dataType: "jsonp"
@@ -36,15 +33,15 @@ Imagical.searchPlugins.push(SearchPlugin.create({
                                         for (var j = 0; j < imgData.responseData.results.length; j++) {
                                             var currentImg = imgData.responseData.results[j];
                                             resultArray.push({
-                                                //Anzeigename des Bilds
+                                                //Title of the image
                                                 title: currentImg.titleNoFormatting,
                                                 //Thumbnail URL
                                                 tnUrl: currentImg.tbUrl,
-                                                //DirectLink
+                                                //DirectLink to the image
                                                 url: currentImg.url,
-                                                //URL mit der Seite des Bilds
+                                                //URL of the corresponding website
                                                 siteUrl: currentImg.originalContextUrl,
-                                                //Name dieses Plugins
+                                                //Name of this plugin
                                                 pluginName: "Google"
                                             });
                                         }
