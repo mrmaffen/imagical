@@ -96,9 +96,9 @@
     
     <script type="text/x-handlebars" data-template-name="term">
         {{#each filteredImageresults}}
-            <div {{bind-attr class=":col-xs-6 :col-sm-4 :col-md-3 isSelected:selected"}} style="height:180px;" >
+            <div {{bind-attr class=":col-xs-6 :col-sm-4 :col-md-3 isSelected:selected isError:error"}} style="height:180px;" >
               <a {{bind-attr title=title}} {{action 'toggleSelected' this}}>
-                <img class="imgTile" {{bind-attr src=tnUrl}}>
+                <img class="imgTile" {{bind-attr src=urlToShow}}>
               </a>
             </div>
         {{else}}

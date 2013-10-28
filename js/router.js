@@ -33,36 +33,43 @@ Imagical.TermRoute = Ember.Route.extend({
     },
     setupController: function(controller, model, queryParams){
         //console.log("setupcontroller");
-        var searchPlugins = this.controllerFor('imagical').get('searchPlugins'); // get array of searchPlugins
         
         var that = this; //store this for async .then function
-        // go through all searchPlugins
-        for (var i=0;i<searchPlugins.length;i++){
-            if (searchPlugins[i].get('isEnabled')){
-                var pluginFunction = searchPlugins[i].get('pluginFunction'); // get corresponding pluginFunction
-                console.log('Querying "'+searchPlugins[i].get('pluginName')+'" for "' + model.get('termText') + '"');
-                controller.set('waitingForResultCount', controller.get('waitingForResultCount') + 1); // increment waitingForResultCount
-                pluginFunction(model.get('termText')).then(function(data) { // execute pluginFunction and declare .then function
-                    controller.set('waitingForResultCount', controller.get('waitingForResultCount') - 1); // decrement waitinForResultCount
-                    for (var j = 0; j < data.length; j++ ){ // for every imageresult being returned
-                        if (!model.get('imageresults').anyBy('url', data[j].url)){ // if imageresult isn't stored already
-                            var imageResult = that.store.createRecord('imageresult', { // store imageresult as new record
-                                siteUrl: data[j].siteUrl,
-                                title: data[j].title,
-                                tnUrl: data[j].tnUrl,
-                                url: data[j].url,
-                                loadedByPlugin: data[j].pluginName
-                            });
-                            imageResult.get('terms').pushObject(model); // store relationship between imageresult and term
-                            imageResult.save();
+        RSVP.Promise( function(resolve, reject){
+            var searchPlugins = that.controllerFor('imagical').get('searchPlugins'); // get array of searchPlugins
+            var termController = that.controllerFor('term');
+            // go through all searchPlugins
+            for (var i=0;i<searchPlugins.length;i++){
+                if (searchPlugins[i].get('isEnabled')){
+                    var pluginFunction = searchPlugins[i].get('pluginFunction'); // get corresponding pluginFunction
+                    console.log('Querying "'+searchPlugins[i].get('pluginName')+'" for "' + model.get('termText') + '"');
+                    termController.set('waitingForResultCount', termController.get('waitingForResultCount') + 1); // increment waitingForResultCount
+                    pluginFunction(model.get('termText')).then(function(data) { // execute pluginFunction and declare .then function
+                        termController.set('waitingForResultCount', termController.get('waitingForResultCount') - 1); // decrement waitinForResultCount
+                        for (var j = 0; j < data.length; j++ ){ // for every imageresult being returned
+                            if (!model.get('imageresults').anyBy('url', data[j].url)){ // if imageresult isn't stored already
+                                var imageResult = that.store.createRecord('imageresult', { // store imageresult as new record
+                                    urlToShow: data[j].tnUrl,
+                                    siteUrl: data[j].siteUrl,
+                                    title: data[j].title,
+                                    tnUrl: data[j].tnUrl,
+                                    url: data[j].url,
+                                    loadedByPlugin: data[j].pluginName
+                                });
+                                imageResult.get('terms').pushObject(model); // store relationship between imageresult and term
+                                imageResult.save();
+                            }
                         }
-                    }
-                }).then(null, function(reason){ // if something goes wrong
-                    controller.set('waitingForResultCount', controller.get('waitingForResultCount') - 1);// decrement waitinForResultCount
-                    console.error(reason);
-                });
+                    }).then(null, function(reason){ // if something goes wrong
+                        termController.set('waitingForResultCount', termController.get('waitingForResultCount') - 1);// decrement waitinForResultCount
+                        console.error(reason);
+                    });
+                }
             }
-        }
+        }).then(function (data){
+        }, function(data){
+            console.error(data);
+        });
         
         controller.set('model', model); // finally attach the model to the given controller
     },
@@ -70,6 +77,7 @@ Imagical.TermRoute = Ember.Route.extend({
         // whenever the user clicks an imageresult, change isSelected boolean in model
         toggleSelected: function(imageresult){
             imageresult.set('isSelected', !imageresult.get('isSelected'));
+            imageresult.set('urlToShow', imageresult.get('url'));
             imageresult.save();
         }
     }

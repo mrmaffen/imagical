@@ -13,100 +13,119 @@ Imagical.ImagicalController = Ember.ArrayController.extend({
         });
     }.observes('@each.isEnabled'),
     actions: {
-        readInputFile: function(e){ //read a file from the ImagicalFileDialog. Store every line as a term
-            //console.log("readInputFile");
-            var reader = new FileReader();
-            var file = e.target.files[0]; // file object
-            var that = this; //store this for async reader.onload callback function
-            
-            reader.onload = function(e) {
-                var text = e.target.result; // get text from file object
-                var lines = text.split(/[\r\n]+/g); // tolerate both Windows and Unix linebreaks
+        readInputFile: function(e){
+            this.set('isReadingInputFile', true);
+            var that = this;
+            RSVP.Promise( function(resolve, reject){
+                console.log("readInputFile");
+                var reader = new FileReader();
+                var file = e.target.files[0]; // file object
                 
-                var fileRecord = that.store.createRecord('file', { // createRecord with filename
-                    fileName: file.name
-                });
-                fileRecord.save();
-                that.transitionToRoute('file', fileRecord); // transition to the newly created filerecord
-            
-                for (var i = 0; i < lines.length; i++){ // go through the complete text
-                    if (lines[i].length < 100 && lines[i].length > 0 && i < 1000){ //limit length of file/line to avoid extreme loading times
-                        var termRecord = that.store.createRecord('term', { // create new term for every line of text
-                            termText: lines[i]
-                        });
-                        termRecord.get('files').pushObject(fileRecord); // add relationship between each term and the corresponding file
-                        termRecord.save();
-                        if (i===0){
-                            // transition to the first term
-                            that.transitionToRoute('term', termRecord, {queryParams: {show: createQueryString(that.get('pluginsToShow'))}});
-                        }
-                    } else{
-                        console.log('Error while reading file: Line too long or empty or over 1000 lines');
-                    }
-                }
-            };
-
-            reader.readAsText(file, "UTF-8");
-        }
-    },
-    saveButton: function(){ // Whenever user selects or deselects an imageresult, download images and generate and serve new zip file
-        var that = this; // store "this" for async .then function
-        var indexFileString = "Index-file\n----------\n\n"; // add header-string to index-file string
-        var promises = []; // used to store all promises
-        var promiseInfos = []; // used to connect promises with their corresponding info later on
-        var terms = this.get('controllers.file').get('terms'); // get all terms from current file model
-        for (var i = 0; terms && i < terms.content.length; i++){ // go through every term
-            var imageResults = terms.content[i].get('imageresults'); // get corresponding imageresult array
-            if (imageResults){
-                var selectedImageResults = imageResults.filterBy('isSelected'); // get all selected imageresults
-                for (var j = 0; selectedImageResults && j < selectedImageResults.length; j++){ // for every selected imageresult
-                    promiseInfos.push({ // push its info in the promiseInfos array, so that we can associate it later on in the .then callback
-                        termText: terms.content[i].get('termText'),
-                        selectedImageResult: selectedImageResults[j]
+                reader.onload = function(e) {
+                    var text = e.target.result; // get text from file object
+                    var lines = text.split(/[\r\n]+/g); // tolerate both Windows and Unix linebreaks
+                    var error = false;
+                    
+                    var fileRecord = that.store.createRecord('file', { // createRecord with filename
+                        fileName: file.name
                     });
-                }
-            }
-        }
-        if (!isPromiseInfosEqual(this.get('lastRequestBatch'), promiseInfos)){ //if we haven't already resolved this promiseinfo array
-            this.set('lastRequestBatch', promiseInfos);
-            if (promiseInfos.length > 0) {
-                this.set('waitingForResultCount', this.get('waitingForResultCount') + 1); //increment waitingForResultCount
-            }
-            for (var i = 0; i < promiseInfos.length; i++){ //for every promiseInfo
-                var url = promiseInfos[i].selectedImageResult.get('url');
-                promises.push(promisingXHR(url)); //execute XHR with the url and push the promise into our promises array
-            }
-        }
-        if (promises.length > 0){
-            RSVP.all(promises).then (function (imgDataArray) { //if all promises were resolved
-                var zip = new JSZip();
-                var lastTermText;
-                var termTextCounter = 0; //used for number counter in filename
-                for (var i = 0; i < imgDataArray.length; i++){
-                    if (imgDataArray[i]){
-                        var promiseInfo = promiseInfos[i]; //get the previously stored promise's info
-                        var url = promiseInfo.selectedImageResult.get('url'); //retrieve the corresponding url
-                        var termText = promiseInfo.termText; //retrieve the corresponding term's text
-                        if (termText != lastTermText){
-                            termTextCounter = 0;
-                        } else {
-                            termTextCounter++;
+                    fileRecord.save();
+                    that.transitionToRoute('file', fileRecord); // transition to the newly created filerecord
+                
+                    for (var i = 0; i < lines.length; i++){ // go through the complete text
+                        if (lines[i].length < 100 && lines[i].length > 0 && i < 1000){ //limit length of file/line to avoid extreme loading times
+                            var termRecord = that.store.createRecord('term', { // create new term for every line of text
+                                termText: lines[i]
+                            });
+                            termRecord.get('files').pushObject(fileRecord); // add relationship between each term and the corresponding file
+                            termRecord.save();
+                            if (i===0){
+                                // transition to the first term
+                                that.transitionToRoute('term', termRecord, {queryParams: {show: createQueryString(that.get('pluginsToShow'))}});
+                            }
+                        } else{
+                            error = true;
                         }
-                        lastTermText = termText;
-                        var fileType = url.substring(url.lastIndexOf('.'), url.length); //extract fileType ending from url
-                        var fileName = termText.replace(/ /g, '_') + prependZeros(termTextCounter) + fileType; //construct filename
-                        indexFileString += fileName + "\n"; //add filename to index-file string
-                        indexFileString += promiseInfo.selectedImageResult.get('siteUrl') + "\n"; //add siteUrl to index-file string
-                        indexFileString += url + "\n\n"; //add url to index-file string
-                        zip.file(fileName, imgDataArray[i], {binary: true}); //finally, add our image-file to the zip-archive
                     }
-                }
-                //console.log(indexFileString);
-                zip.file("index-file.txt", indexFileString); //add index-file to zip-archive
-                that.set('saveButtonHref', window.URL.createObjectURL(zip.generate({type:"blob"}))); //now add the blob-url to the saveButton <a>
-                that.set('waitingForResultCount', that.get('waitingForResultCount') - 1); //decrement waitingForResultCount
+                    if (error)
+                        reject('Error while reading file: Line too long or empty or over 1000 lines');
+                    resolve();
+                };
+
+                reader.readAsText(file, "UTF-8");
+            }).then(function (data){
+                this.set('isReadingInputFile', false);
+            }, function(data){
+                console.error(data);
             });
         }
+    },
+    saveButton: function(){ // Whenever user selects or deselects an imageresult, download images and generate and serve new zip file   
+        var that = this;
+        RSVP.Promise( function(resolve, reject){
+            var indexFileString = "Index-file\n----------\n\n"; // add header-string to index-file string
+            var promises = []; // used to store all promises
+            var promiseInfos = []; // used to connect promises with their corresponding info later on
+            var terms = that.get('controllers.file').get('terms'); // get all terms from current file model
+            for (var i = 0; terms && i < terms.content.length; i++){ // go through every term
+                var imageResults = terms.content[i].get('imageresults'); // get corresponding imageresult array
+                if (imageResults){
+                    var selectedImageResults = imageResults.filterBy('isSelected'); // get all selected imageresults
+                    for (var j = 0; selectedImageResults && j < selectedImageResults.length; j++){ // for every selected imageresult
+                        promiseInfos.push({ // push its info in the promiseInfos array, so that we can associate it later on in the .then callback
+                            termText: terms.content[i].get('termText'),
+                            selectedImageResult: selectedImageResults[j]
+                        });
+                    }
+                }
+            }
+            if (!isPromiseInfosEqual(that.get('lastRequestBatch'), promiseInfos)){ //if we haven't already resolved this promiseinfo array
+                that.set('lastRequestBatch', promiseInfos);
+                if (promiseInfos.length > 0) {
+                    that.set('waitingForResultCount', that.get('waitingForResultCount') + 1); //increment waitingForResultCount
+                }
+                for (var i = 0; i < promiseInfos.length; i++){ //for every promiseInfo
+                    var url = promiseInfos[i].selectedImageResult.get('url');
+                    promises.push(promisingXHR(url)); //execute XHR with the url and push the promise into our promises array
+                }
+            }
+            if (promises.length > 0){
+                RSVP.all(promises).then (function (imgDataArray) { //if all promises were resolved
+                    var zip = new JSZip();
+                    var lastTermText;
+                    var termTextCounter = 0; //used for number counter in filename
+                    for (var i = 0; i < imgDataArray.length; i++){
+                            var promiseInfo = promiseInfos[i]; //get the previously stored promise's info
+                        if (imgDataArray[i]){
+                            var url = promiseInfo.selectedImageResult.get('url'); //retrieve the corresponding url
+                            var termText = promiseInfo.termText; //retrieve the corresponding term's text
+                            if (termText != lastTermText){
+                                termTextCounter = 0;
+                            } else {
+                                termTextCounter++;
+                            }
+                            lastTermText = termText;
+                            var fileType = url.substring(url.lastIndexOf('.'), url.length); //extract fileType ending from url
+                            var fileName = termText.replace(/ /g, '_') + prependZeros(termTextCounter) + fileType; //construct filename
+                            indexFileString += fileName + "\n"; //add filename to index-file string
+                            indexFileString += promiseInfo.selectedImageResult.get('siteUrl') + "\n"; //add siteUrl to index-file string
+                            indexFileString += url + "\n\n"; //add url to index-file string
+                            zip.file(fileName, imgDataArray[i], {binary: true}); //finally, add our image-file to the zip-archive
+                        } else {
+                            promiseInfo.selectedImageResult.set('isError', true);
+                        }
+                    }
+                    //console.log(indexFileString);
+                    zip.file("index-file.txt", indexFileString); //add index-file to zip-archive
+                    resolve(window.URL.createObjectURL(zip.generate({type:"blob"})));
+                    that.set('waitingForResultCount', that.get('waitingForResultCount') - 1); //decrement waitingForResultCount
+                });
+            }
+        }).then(function (data){
+            that.set('saveButtonHref', data); //now add the blob-url to the saveButton <a>
+        }).then(null, function(reason){ // if something goes wrong
+            console.error(reason);
+        });
     }.observes('controllers.term.imageresults.@each.isSelected'),
     lastRequestBatch: null,
     saveButtonHref: "#", //savebutton's href attribute value
@@ -116,7 +135,8 @@ Imagical.ImagicalController = Ember.ArrayController.extend({
             return true;
         else
             return false;
-    }.property('waitingForResultCount')
+    }.property('waitingForResultCount'),
+    isReadingInputFile: false
 });
 
 Imagical.FileController = Ember.ObjectController.extend({
@@ -188,21 +208,18 @@ function prependZeros(numberString){
     return numberString;
 }
 
-//Wrap a XMLHttpRequest in an RSVP.Promise, so that we can use the promise-typical .then function
+//Wrap a Ajax/XMLHttpRequest in an RSVP.Promise, so that we can always have a resolved promise
 function promisingXHR(url) {
   var promise = new RSVP.Promise(function(resolve, reject){
-    var client = new XMLHttpRequest();
-    client.open("GET", url);
-    client.overrideMimeType('text/plain; charset=x-user-defined');
-    client.onreadystatechange = handler;
-    client.send();
-
-    function handler() {
-      if (this.readyState === this.DONE) {
-        if (this.status === 200) { resolve(this.response); }
-        else { reject(null); }
-      }
-    };
+      $.ajax({
+        url: url,
+        mimeType: 'text/plain; charset=x-user-defined',
+        timeout: 10000
+      }).then( function(data){
+        resolve(data);
+      }, function(data){
+        resolve(null);
+      });
   });
 
   return promise;
