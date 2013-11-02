@@ -53,17 +53,24 @@
                   </div>
                   <div class="col-md-2" id="topBar">
                     {{#if isGeneratingZip}}
-                        <button type="input" {{bind-attr class=":btn :btn-default isGeneratingZip:generatingZip"}} id="saveButton" >        
+                        <button type="input" class="btn btn-default generatingZip" id="saveButton" >        
                           <span class="glyphicon glyphicon-floppy-save"></span>
-                          Save
+                          Generating Zip
                         </button>  
                     {{else}}
-                        <a {{bind-attr href=saveButtonHref}} download="imageBundle.zip">          
-                            <button type="input" {{bind-attr class=":btn :btn-default isGeneratingZip:generatingZip"}} id="saveButton" >        
+                        {{#if isZipGenerated}}
+                            <a {{bind-attr href=saveButtonHref}} download="imageBundle.zip" >          
+                                <button type="input" class="btn btn-default" id="saveButton">        
+                                  <span class="glyphicon glyphicon-floppy-save"></span>
+                                  Save
+                                </button>  
+                            </a>
+                        {{else}}     
+                            <button type="input" class="btn btn-default" id="saveButton" {{action 'generateZipButton'}}>        
                               <span class="glyphicon glyphicon-floppy-save"></span>
-                              Save
+                              Generate Zip
                             </button>  
-                        </a>
+                        {{/if}}
                     {{/if}}
                   </div>
                 </div>
@@ -123,11 +130,12 @@
     <script src="js/libs/ember.min.js"></script>
     <script src="js/libs/ember-data.min.js"></script>
     <script src="js/libs/localstorage_adapter.js"></script>
-    <script src="js/libs/rsvp-latest.js"></script>
     
     <!-- Other libs JavaScript
     ================================================== -->
     <script src="js/libs/jszip.js"></script>
+    <script src="js/libs/rsvp-latest.js"></script>
+    <script src="js/libs/async.js"></script>
     
     <!-- Custom JavaScript
     ================================================== -->
