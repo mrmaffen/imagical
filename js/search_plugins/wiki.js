@@ -64,6 +64,7 @@ function searchWiki (keyWord, useWikiCommons, locale, pluginName){
                                         dataType: "jsonp"
                                         }));
                                 }
+                                // .then is only being called if _all_ promises inside our promises array were resolved successfully
                                 RSVP.all(promises).then (function(imgDataArray) {
                                         for (var k=0; k< imgDataArray.length;k++){
 						var imgData = imgDataArray[k];
