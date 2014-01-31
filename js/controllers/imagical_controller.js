@@ -21,6 +21,9 @@ Imagical.ImagicalController = Ember.ArrayController.extend({
                     console.log("readInputFile");
                     var reader = new FileReader();
                     var file = e.target.files[0]; // file object
+                    var fullPath = e.target.value;
+		    var fileName = fullPath.split(/(\\|\/)/g).pop().replace(".", "_");
+                    that.set('inputFileName', fileName + ".zip");
                     
                     reader.onload = function(e) {
                         var text = e.target.result; // get text from file object
@@ -147,7 +150,8 @@ Imagical.ImagicalController = Ember.ArrayController.extend({
     makeZipInvalid: function(){
         this.set('isZipGenerated', false);
     }.observes('controllers.term.imageresults.@each.isSelected'),
-    isReadingInputFile: false
+    isReadingInputFile: false,
+    inputFileName: "imageBundle.zip"
 });
 
 Imagical.FileController = Ember.ObjectController.extend({

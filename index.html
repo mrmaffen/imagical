@@ -59,7 +59,7 @@
                         </button>  
                     {{else}}
                         {{#if isZipGenerated}}
-                            <a {{bind-attr href=saveButtonHref}} download="imageBundle.zip" >          
+                            <a {{bind-attr href=saveButtonHref download=inputFileName}} >          
                                 <button type="input" class="btn btn-default" id="saveButton">        
                                   <span class="glyphicon glyphicon-floppy-save"></span>
                                   Save
