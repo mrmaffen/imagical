@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="./assets/ico/favicon.png">
+
+    <title>Imagical</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="./dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="main.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="./assets/js/html5shiv.js"></script>
+      <script src="./assets/js/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+    <script type="text/x-handlebars" data-template-name="imagical">
+        <div class="container">
+  
+            <div class="row">
+              <div class="jumbotron">
+                <h1>Imagical</h1>
+                <p>Efficiently download loads of images from different sources by providing a simple list of keywords.</p>
+              </div>
+              <div class="col-md-12" id="topBarContainer">
+                  <div class="col-md-2" id="topBar">
+                    <p><strong>Sources</strong></p>
+                    {{#each}}
+                    <div class="checkbox">
+                      <label>
+                        {{input type="checkbox" checked=isEnabled}} <p>{{pluginName}}</p>
+                      </label>
+                    </div>
+                    {{else}}
+                        No search plugins available.
+                    {{/each}}
+                  </div>
+                  <div class="col-md-8" id="topBar">
+                    <div class="form-group">
+                      <p><strong>File input</strong></p>
+                      {{view ImagicalFileDialog}}
+                      <p>Choose the textfile which contains your list of keywords to search for.</p>
+                    </div>  
+                  </div>
+                  <div class="col-md-2" id="topBar">
+                    {{#if isGeneratingZip}}
+                        <button type="input" class="btn btn-default generatingZip" id="saveButton" >        
+                          <span class="glyphicon glyphicon-floppy-save"></span>
+                          Generating Zip
+                        </button>  
+                    {{else}}
+                        {{#if isZipGenerated}}
+                            <a {{bind-attr href=saveButtonHref download=inputFileName}} >          
+                                <button type="input" class="btn btn-default" id="saveButton">        
+                                  <span class="glyphicon glyphicon-floppy-save"></span>
+                                  Save
+                                </button>  
+                            </a>
+                        {{else}}     
+                            <button type="input" class="btn btn-default" id="saveButton" {{action 'generateZipButton'}}>        
+                              <span class="glyphicon glyphicon-floppy-save"></span>
+                              Generate Zip
+                            </button>  
+                        {{/if}}
+                    {{/if}}
+                  </div>
+                </div>
+                  {{outlet}}
+            </div>
+  
+        </div> <!-- /container -->    
+    </script>
+    
+    <script type="text/x-handlebars" data-template-name="file">
+          <div class="col-md-2">
+            <button type="input" class="btn btn-default" id="nextButton" {{action 'nextTerm'}}>
+              <span class="glyphicon glyphicon-chevron-right"></span>
+              Next term
+            </button>  
+            <div class="list-group" id="sideBar">
+              {{#each content.terms}}
+                  {{#link-to 'term' this class='list-group-item' title=termText}}
+                    {{termText}}
+                  {{/link-to}}
+              {{else}}
+                  File doesn't contain any valid terms.
+              {{/each}}
+            </div>
+          </div>
+          <div class="col-md-10">
+          {{outlet}}
+          </div>
+    </script>
+    
+    <script type="text/x-handlebars" data-template-name="term">
+        {{#each filteredImageresults}}
+            <div {{bind-attr class=":col-xs-6 :col-sm-4 :col-md-3 isSelected:selected isError:error"}} style="height:180px;" >
+              <a {{bind-attr title=title}} {{action 'toggleSelected' this}}>
+                <img class="imgTile" {{bind-attr src=urlToShow}}>
+              </a>
+            </div>
+        {{else}}
+            {{#if isSearching}}
+                <div col-xs-6 :col-sm-4 :col-md-3 style="height:320px;" >
+                    <img class="imgTile" src="assets/images/loading_circle.gif">
+                </div>
+            {{else}}
+                No images found.
+            {{/if}}
+        {{/each}}
+    </script>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    
+    <!-- Ember.js core JavaScript
+    ================================================== -->
+    <script src="js/libs/jquery-1.10.2.min.js"></script>
+    <script src="js/libs/handlebars-1.0.0.js"></script>
+    <script src="js/libs/ember.min.js"></script>
+    <script src="js/libs/ember-data.min.js"></script>
+    <script src="js/libs/localstorage_adapter.js"></script>
+    
+    <!-- Other libs JavaScript
+    ================================================== -->
+    <script src="js/libs/jszip.js"></script>
+    <script src="js/libs/rsvp-latest.js"></script>
+    <script src="js/libs/async.js"></script>
+    
+    <!-- Custom JavaScript
+    ================================================== -->
+    <script src="js/application.js"></script>
+    <script src="js/router.js"></script>
+    <script src="js/models/model.js"></script>
+    <script src="js/controllers/imagical_controller.js"></script>
+    
+    <!-- Search plugins Javascript
+    ================================================== -->
+    <script src="js/search_plugins/wiki.js"></script>   
+    <script src="js/search_plugins/wikipedia.js"></script>   
+    <script src="js/search_plugins/wikicommons.js"></script>  
+    <script src="js/search_plugins/google.js"></script>    
+    
+    <!-- Placed at the end of the document so the pages load faster -->
+  </body>
+</html>
